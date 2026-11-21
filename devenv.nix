@@ -5,6 +5,7 @@
     pkgs.espup
     pkgs.esp-generate
     pkgs.espflash
+    pkgs.cargo-watch
   ];
 
   enterShell = ''
