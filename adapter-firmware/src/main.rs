@@ -10,13 +10,16 @@
 use embassy_executor::Spawner;
 use embassy_usb_host::BusState;
 use esp_hal::clock::CpuClock;
+use esp_hal::i2c::master::Config as I2cConfig;
+use esp_hal::i2c::master::I2c;
+use esp_hal::time::Rate;
 use esp_hal::timer::timg::TimerGroup;
 use esp_hal::usb::otg::{Usb, embassy_usb_host as otg_host};
 use static_cell::StaticCell;
 
 mod ble;
+mod display;
 mod report;
-
 mod usb_host;
 
 #[panic_handler]
@@ -53,8 +56,18 @@ async fn main(spawner: Spawner) -> ! {
     spawner.spawn(usb_host::usb_host(host_driver, bus_state).unwrap());
     spawner.spawn(ble::ble_keyboard(peripherals.BT).unwrap());
 
+    let i2c_bus = I2c::new(
+        peripherals.I2C0,
+        I2cConfig::default().with_frequency(Rate::from_khz(400)),
+    )
+    .unwrap()
+    .with_scl(peripherals.GPIO9)
+    .with_sda(peripherals.GPIO8)
+    .into_async();
+
+    spawner.spawn(display::ferris_dance(i2c_bus).unwrap());
+
     loop {
-        embassy_time::Timer::after(embassy_time::Duration::from_secs(1)).await;
+        embassy_time::Timer::after(embassy_time::Duration::from_millis(60)).await;
     }
 }
-
