@@ -61,6 +61,9 @@ trouble-host = { version = "0.7.0", features = [
 
 critical-section = "1.2.0"
 static_cell      = "2.1.1"
+embedded-graphics = "0.8.2"
+ssd1306 = { version = "0.10.0", features = ["async"] }
+tinybmp = "0.7.0"
 
 
 # For fine tuning these settings, please refer to https://doc.rust-lang.org/cargo/reference/profiles.html
